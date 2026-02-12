@@ -20,8 +20,11 @@ jobs:
           channel: "stable"
           cache: true
 
+      - name: Verify Dart
+        run: dart --version
+
       - name: Get dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Build Print Bridge .exe
         run: dart compile exe bin/server.dart -o hesett_print_bridge.exe
