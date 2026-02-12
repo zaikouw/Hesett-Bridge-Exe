@@ -1,0 +1,36 @@
+# Build Hesett Print Bridge .exe for Windows (run manually or on push)
+name: Build Windows .exe
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter (includes Dart)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.3"
+          channel: "stable"
+          cache: true
+
+      - name: Verify Dart
+        run: dart --version
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Print Bridge .exe
+        run: dart compile exe bin/server.dart -o hesett_print_bridge.exe
+
+      - name: Upload hesett_print_bridge.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: hesett-print-bridge-windows
+          path: hesett_print_bridge.exe
