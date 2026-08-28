@@ -29,8 +29,42 @@ jobs:
       - name: Build Print Bridge .exe
         run: dart compile exe bin/server.dart -o hesett_print_bridge.exe
 
-      - name: Upload hesett_print_bridge.exe
+      - name: Download WinSW (Windows Service Wrapper)
+        shell: pwsh
+        run: |
+          # Download WinSW v3.0.0-alpha.11 (stable release for .NET Framework)
+          $winsw_url = "https://github.com/winsw/winsw/releases/download/v3.0.0-alpha.11/WinSW-net461.exe"
+          Invoke-WebRequest -Uri $winsw_url -OutFile "service/hesett-print-bridge-service.exe"
+          Write-Host "Downloaded WinSW to service/hesett-print-bridge-service.exe"
+
+      - name: Prepare distribution package
+        shell: pwsh
+        run: |
+          # Create distribution directory
+          New-Item -ItemType Directory -Force -Path "dist"
+          
+          # Copy main executable
+          Copy-Item "hesett_print_bridge.exe" "dist/"
+          
+          # Copy launcher scripts (root level for backwards compatibility)
+          Copy-Item "Run_Print_Bridge.bat" "dist/"
+          Copy-Item "Run_Print_Bridge_Debug.bat" "dist/"
+          
+          # Copy all service files
+          Copy-Item "service/hesett-print-bridge-service.exe" "dist/"
+          Copy-Item "service/hesett-print-bridge-service.xml" "dist/"
+          Copy-Item "service/Install_Service.bat" "dist/"
+          Copy-Item "service/Uninstall_Service.bat" "dist/"
+          Copy-Item "service/Start_Service.bat" "dist/"
+          Copy-Item "service/Stop_Service.bat" "dist/"
+          Copy-Item "service/Check_Service_Status.bat" "dist/"
+          
+          # List contents
+          Write-Host "Distribution package contents:"
+          Get-ChildItem "dist/"
+
+      - name: Upload distribution package
         uses: actions/upload-artifact@v4
         with:
           name: hesett-print-bridge-windows
-          path: hesett_print_bridge.exe
+          path: dist/
