@@ -10,7 +10,9 @@ if not exist "hesett_print_bridge.exe" (
     exit /b 1
 )
 
-"%~dp0hesett_print_bridge.exe" --host 127.0.0.1 --port 7171 --allowed-origins "https://business.hesett.com,http://localhost:8080,http://localhost:3000,http://localhost:5000"
+REM Binds to 0.0.0.0:7171 - reachable on the LAN.
+REM For localhost-only debugging, use Run_Print_Bridge_Debug.bat instead.
+"%~dp0hesett_print_bridge.exe" --port 7171 --allowed-origins "https://business.hesett.com,http://localhost:8080,http://localhost:3000,http://localhost:5000"
 
 echo.
 echo Press any key to close...

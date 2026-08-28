@@ -1,0 +1,50 @@
+<!--
+  WinSW Configuration for Hesett Print Bridge Windows Service
+  
+  This file must be named the same as the WinSW executable (minus .xml/.exe).
+  E.g., hesett-print-bridge-service.exe reads hesett-print-bridge-service.xml
+  
+  See: https://github.com/winsw/winsw/blob/v3/docs/xml-config-file.md
+-->
+<service>
+  <id>HesettPrintBridge</id>
+  <name>Hesett Print Bridge</name>
+  <description>Local print bridge for Hesett Restaurant POS. Enables printing from the web dashboard and iPads via WebSocket on port 7171.</description>
+  
+  <!-- Path to the main executable (relative to this XML file location) -->
+  <executable>%BASE%\hesett_print_bridge.exe</executable>
+  
+  <!-- 
+    Command line arguments:
+    - Binds to 0.0.0.0:7171 (all interfaces) for LAN access
+    - Origin allowlist restricts which websites can connect
+  -->
+  <arguments>--port 7171 --allowed-origins "https://business.hesett.com,http://localhost:8080,http://localhost:3000,http://localhost:5000"</arguments>
+  
+  <!-- Start automatically when Windows boots -->
+  <startmode>Automatic</startmode>
+  
+  <!-- Restart on failure with exponential backoff -->
+  <onfailure action="restart" delay="5 sec"/>
+  <onfailure action="restart" delay="15 sec"/>
+  <onfailure action="restart" delay="60 sec"/>
+  
+  <!-- Reset failure count after 1 hour of successful running -->
+  <resetfailure>1 hour</resetfailure>
+  
+  <!-- Log configuration -->
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>5</keepFiles>
+  </log>
+  <logpath>%BASE%\logs</logpath>
+  
+  <!-- Working directory -->
+  <workingdirectory>%BASE%</workingdirectory>
+  
+  <!-- Priority (normal is fine for a print service) -->
+  <priority>Normal</priority>
+  
+  <!-- Stop timeout - wait 15 seconds for graceful shutdown -->
+  <stoptimeout>15 sec</stoptimeout>
+</service>
